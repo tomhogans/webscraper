@@ -60,3 +60,5 @@ def get_title(html):
         return None
 
 
+if __name__ == '__main__':
+    pass
