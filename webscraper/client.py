@@ -12,13 +12,14 @@ class Session(object):
     def __init__(self):
         self.cookies = cookielib.FileCookieJar()
         self.cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
-        self.proxy_handler = urllib2.ProxyHandler({})
+        self.proxy_handler = None
         self.timeout = 10
         self._build_opener()
 
     def _build_opener(self):
         handlers = [urllib2.HTTPRedirectHandler(), self.cookie_handler]
-        handlers.append(self.proxy_handler)
+        if self.proxy_handler:
+            handlers.append(self.proxy_handler)
         self.opener = urllib2.build_opener(*handlers)
         headers = [('User-Agent', _USERAGENT_FF3)]
         self.opener.addheaders = headers
@@ -27,6 +28,9 @@ class Session(object):
         self.timeout = int(seconds)
 
     def set_proxy(self, host, port, username=None, password=None):
+        if not host:
+            self.proxy_handler = None
+            return
         if username:
             #TODO: Add proxy auth
             print 'No proxy auth supported'
