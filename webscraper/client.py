@@ -75,26 +75,29 @@ def encode_multipart_formdata(fields, files=None):
     
     Taken from: http://code.activestate.com/recipes/146306/ """
 
-    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+    def generate_boundary():
+        return '----------ThIs_Is_tHe_bouNdaRY'
+
+    boundary = generate_boundary()
     L = []
     if type(fields) == dict:
         fields = fields.items()
     for (key, value) in fields:
-        L.append('--' + BOUNDARY)
+        L.append('--%s' % boundary)
         L.append('Content-Disposition: form-data; name="%s"' % key)
         L.append('')
         L.append(value)
     if files:
         for (key, filename, value) in files:
-            L.append('--' + BOUNDARY)
+            L.append('--%s' % boundary)
             L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
             L.append('Content-Type: %s' % (mimetypes.guess_type(filename)[0] or 'application/octet-stream'))
             L.append('')
             L.append(value)
-            L.append('--' + BOUNDARY + '--')
-            L.append('')
+    L.append('--%s--' % boundary)
+    L.append('')
     body = '\r\n'.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+    content_type = 'multipart/form-data; boundary=%s' % boundary
     return content_type, body
 
 
