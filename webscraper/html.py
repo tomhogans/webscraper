@@ -3,6 +3,7 @@
 from lxml import etree
 import re
 
+
 def get_rx(regex, body):
     """ Return first result of regular expression 'regex' in 'body' """
     results = re.compile(regex).findall(body)
@@ -10,11 +11,13 @@ def get_rx(regex, body):
         return False
     return results[0]
 
+
 def get_tree(html):
     return etree.HTML(html)
 
+
 def get_inputs(html):
-    inputs = { }
+    inputs = {}
     root = etree.HTML(html)
     for i in root.xpath("//input"):
         inputs[i.get('name')] = i.get('value') or ''
@@ -29,12 +32,13 @@ def get_inputs(html):
         else:
             options = ''
         inputs[i.get('name')] = options
-    if inputs.has_key(None):
+    if None in inputs:
         del inputs[None]
     return inputs
 
+
 def get_forms(html, form_name=None, action=None, xpath=None):
-    forms = [ ]
+    forms = []
     root = etree.HTML(html)
     if form_name:
         xpath_exp = "//form[@name='%s' or @id='%s']" % (form_name, form_name)
@@ -50,6 +54,7 @@ def get_forms(html, form_name=None, action=None, xpath=None):
                 'fields': get_inputs(etree.tostring(form)), }
         forms.append(form)
     return forms
+
 
 def get_title(html):
     root = etree.HTML(html)

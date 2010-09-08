@@ -5,7 +5,9 @@ import urllib2
 import cookielib
 import mimetypes
 
-_USERAGENT_FF3 = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.8) Gecko/20100722 Firefox/3.6.8'
+_USERAGENT_FF3 = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.' \
+        '1.8) Gecko/20100722 Firefox/3.6.8'
+
 
 class Session(object):
     """ Implements a web session that handles proxies, cookies, etc. """
@@ -90,7 +92,9 @@ def encode_multipart_formdata(fields, files=None):
     if files:
         for (key, filename, value) in files:
             L.append('--%s' % boundary)
-            L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+            header = 'Content-Disposition: form-data; name="%s"; filename' \
+                    '="%s"' % (key, filename)
+            L.append(header)
             L.append('Content-Type: %s' % (mimetypes.guess_type(filename)[0] or 'application/octet-stream'))
             L.append('')
             L.append(value)
