@@ -15,6 +15,7 @@ class Session(object):
         self.cookies = cookielib.FileCookieJar()
         self.cookie_handler = urllib2.HTTPCookieProcessor(self.cookies)
         self.proxy_handler = None
+        self.proxy_auth = None
         self.timeout = 10
         self._build_opener()
 
@@ -22,6 +23,8 @@ class Session(object):
         handlers = [urllib2.HTTPRedirectHandler(), self.cookie_handler]
         if self.proxy_handler:
             handlers.append(self.proxy_handler)
+        if self.proxy_auth:
+            handlers.append(self.proxy_auth)
         self.opener = urllib2.build_opener(*handlers)
         headers = [('User-Agent', _USERAGENT_FF3)]
         self.opener.addheaders = headers
@@ -30,14 +33,17 @@ class Session(object):
         self.timeout = int(seconds)
 
     def set_proxy(self, host, port, username=None, password=None):
-        if not host:
-            self.proxy_handler = None
-            return
-        if username:
-            #TODO: Add proxy auth
-            print 'No proxy auth supported'
         proxy_addr = '%s:%s' % (host, port)
         proxy_protocols = {'http': proxy_addr, 'https': proxy_addr}
+        if not host:
+            self.proxy_handler = None
+            self.proxy_auth = None
+            return
+        if username:
+            passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+            passmgr.add_password(None, 'http://%s' % proxy_addr, 
+                    username, password)
+            self.proxy_auth = urllib2.ProxyBasicAuthHandler(passmgr)
         self.proxy_handler = urllib2.ProxyHandler(proxy_protocols)
         self._build_opener()
 
@@ -48,7 +54,7 @@ class Session(object):
         return response
 
     def post(self, url, params):
-        """ Sends a POST request to specified URL with included params 
+        """ Sends a POST request to specified URL with included params
 
         params: either a URL encoded string or a dictionary """
         if type(params) is not str:
@@ -78,7 +84,7 @@ def encode_multipart_formdata(fields, files=None):
     Taken from: http://code.activestate.com/recipes/146306/ """
 
     def generate_boundary():
-        return '----------ThIs_Is_tHe_bouNdaRY'
+        return '----------DjshEfhAcVyueShrAltuN'
 
     boundary = generate_boundary()
     L = []
@@ -95,7 +101,8 @@ def encode_multipart_formdata(fields, files=None):
             header = 'Content-Disposition: form-data; name="%s"; filename' \
                     '="%s"' % (key, filename)
             L.append(header)
-            L.append('Content-Type: %s' % (mimetypes.guess_type(filename)[0] or 'application/octet-stream'))
+            t = mimetypes.guess_type(filename)[0]
+            L.append('Content-Type: %s' % (t or 'application/octet-stream'))
             L.append('')
             L.append(value)
     L.append('--%s--' % boundary)
@@ -105,5 +112,12 @@ def encode_multipart_formdata(fields, files=None):
     return content_type, body
 
 
+def test_proxy_auth():
+    c = Session()
+    c.set_proxy('66.96.219.40', 60099, 'kuipermedia', 'pr0xysvc44')
+    resp = c.get('https://www.whatismyip.com/automation/n09230945.asp')
+    print resp.read()
+    print resp.code
+
 if __name__ == '__main__':
-    pass
+    test_proxy_auth()
