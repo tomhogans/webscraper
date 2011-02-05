@@ -114,7 +114,7 @@ def encode_multipart_formdata(fields, files=None):
 
 def test_proxy_auth():
     c = Session()
-    c.set_proxy('66.96.219.40', 60099, 'kuipermedia', 'pr0xysvc44')
+    c.set_proxy('173.230.138.145', 10000)
     resp = c.get('https://www.whatismyip.com/automation/n09230945.asp')
     print resp.read()
     print resp.code
