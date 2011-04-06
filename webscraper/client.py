@@ -44,6 +44,8 @@ class Session(object):
             passmgr.add_password(None, 'http://%s' % proxy_addr, 
                     username, password)
             self.proxy_auth = urllib2.ProxyBasicAuthHandler(passmgr)
+        else:
+            self.proxy_auth = False
         self.proxy_handler = urllib2.ProxyHandler(proxy_protocols)
         self._build_opener()
 
