@@ -49,19 +49,28 @@ class Session(object):
         self.proxy_handler = urllib2.ProxyHandler(proxy_protocols)
         self._build_opener()
 
-    def get(self, url):
-        """ Sends a GET request for the specified URL """
+    def get(self, url, headers=None):
+        """ Sends a GET request for the specified URL 
+        
+        headers: a list of (key, value) tuples of one-time headers """
         request = urllib2.Request(url)
+        if headers:
+            for header, value in headers:
+                request.add_header(header, value)
         response = self.opener.open(request, timeout=self.timeout)
         return response
 
-    def post(self, url, params):
+    def post(self, url, params, headers=None):
         """ Sends a POST request to specified URL with included params
 
-        params: either a URL encoded string or a dictionary """
+        params: either a URL encoded string or a dictionary 
+        headers: a list of (key, value) tuples of one-time headers """
         if type(params) is not str:
             params = urllib.urlencode(params)
         request = urllib2.Request(url, params)
+        if headers:
+            for header, value in headers:
+                request.add_header(header, value)
         response = self.opener.open(request, timeout=self.timeout)
         return response
 
@@ -89,7 +98,7 @@ def encode_multipart_formdata(fields, files=None):
         return '----------DjshEfhAcVyueShrAltuN'
 
     boundary = generate_boundary()
-    L = []
+    L = [ ]
     if type(fields) == dict:
         fields = fields.items()
     for (key, value) in fields:
@@ -116,7 +125,7 @@ def encode_multipart_formdata(fields, files=None):
 
 def test_proxy_auth():
     c = Session()
-    c.set_proxy('173.230.138.145', 10000)
+    c.set_proxy('localhost', 10000)
     resp = c.get('https://www.whatismyip.com/automation/n09230945.asp')
     print resp.read()
     print resp.code
