@@ -36,7 +36,7 @@ class Session(object):
         self.timeout = int(seconds)
 
     def set_proxy(self, host, port, username=None, password=None):
-        proxy_addr = '%s:%s' % (host, port)
+        proxy_addr = '{0}:{1}'.format(host, port)
         proxy_protocols = {'http': proxy_addr, 'https': proxy_addr}
         if not host:
             self.proxy_handler = None
@@ -44,7 +44,7 @@ class Session(object):
             return
         if username:
             passmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
-            passmgr.add_password(None, 'http://%s' % proxy_addr, 
+            passmgr.add_password(None, 'http://{0}'.format(proxy_addr), 
                     username, password)
             self.proxy_auth = urllib2.ProxyBasicAuthHandler(passmgr)
         else:
@@ -105,33 +105,25 @@ def encode_multipart_formdata(fields, files=None):
     if type(fields) == dict:
         fields = fields.items()
     for (key, value) in fields:
-        L.append('--%s' % boundary)
-        L.append('Content-Disposition: form-data; name="%s"' % key)
+        L.append('--{0}'.format(boundary))
+        L.append('Content-Disposition: form-data; name="{0}"'.format(key))
         L.append('')
         L.append(value)
     if files:
         for (key, filename, value) in files:
             L.append('--%s' % boundary)
-            header = 'Content-Disposition: form-data; name="%s"; filename' \
-                    '="%s"' % (key, filename)
+            header = 'Content-Disposition: form-data; name="{0}"; filename' \
+                    '="{1}"'.format(key, filename))
             L.append(header)
             t = mimetypes.guess_type(filename)[0]
-            L.append('Content-Type: %s' % (t or 'application/octet-stream'))
+            L.append('Content-Type: {0}'.format(
+                (t or 'application/octet-stream')))
             L.append('')
             L.append(value)
-    L.append('--%s--' % boundary)
+    L.append('--{0}--'.format(boundary))
     L.append('')
     body = '\r\n'.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % boundary
+    content_type = 'multipart/form-data; boundary={0}'.format(boundary)
     return content_type, body
 
 
-def test_proxy_auth():
-    c = Session()
-    c.set_proxy('localhost', 10000)
-    resp = c.get('https://www.whatismyip.com/automation/n09230945.asp')
-    print resp.read()
-    print resp.code
-
-if __name__ == '__main__':
-    test_proxy_auth()

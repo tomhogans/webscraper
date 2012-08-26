@@ -44,9 +44,10 @@ def get_forms(html, form_name=None, action=None, xpath=None):
     forms = []
     root = etree.HTML(html)
     if form_name:
-        xpath_exp = "//form[@name='%s' or @id='%s']" % (form_name, form_name)
+        xpath_exp = "//form[@name='{0}' or @id='{1}']".format(
+                form_name, form_name)
     elif action:
-        xpath_exp = "//form[@action='%s']" % action
+        xpath_exp = "//form[@action='{0}']".format(action)
     elif xpath:
         xpath_exp = xpath
     else:
