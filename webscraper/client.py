@@ -1,4 +1,7 @@
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" Provides functionality to mimic HTTP session """
 
 import urllib
 import urllib2

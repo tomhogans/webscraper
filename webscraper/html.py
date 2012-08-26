@@ -1,4 +1,7 @@
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" Helper functions for processing HTML """
 
 from lxml import etree
 import re
