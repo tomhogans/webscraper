@@ -113,7 +113,7 @@ def encode_multipart_formdata(fields, files=None):
         for (key, filename, value) in files:
             L.append('--%s' % boundary)
             header = 'Content-Disposition: form-data; name="{0}"; filename' \
-                    '="{1}"'.format(key, filename))
+                    '="{1}"'.format(key, filename)
             L.append(header)
             t = mimetypes.guess_type(filename)[0]
             L.append('Content-Type: {0}'.format(
