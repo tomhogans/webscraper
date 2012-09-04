@@ -22,12 +22,18 @@ def get_tree(html):
 def get_inputs(html):
     inputs = {}
     root = etree.HTML(html)
+
+    if not root:
+        return None
+
     for i in root.xpath("//input"):
         inputs[i.get('name')] = i.get('value') or ''
         if inputs[i.get('name')]:
             inputs[i.get('name')] = inputs[i.get('name')].encode('utf-8')
+
     for i in root.xpath("//textarea"):
         inputs[i.get('name')] = i.text or ''
+
     for i in root.xpath("//select"):
         options = i.xpath("option")
         if options:
@@ -35,8 +41,10 @@ def get_inputs(html):
         else:
             options = ''
         inputs[i.get('name')] = options
+
     if None in inputs:
         del inputs[None]
+
     return inputs
 
 
